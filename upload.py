@@ -2,16 +2,30 @@
 
 import socket
 import sys
+import base64
+import json
 
 SERVER = '192.168.6.2'
 PORT = 1234
 
 s = socket.socket()
 s.connect((SERVER, PORT))
-f = open('img.png', 'rb')
-l = f.read(1024)
-while (l):
-    s.send(l)
-    l = f.read(1024)
+
+if len(sys.argv) < 2:
+    print('digite um nome para o arquivo')
+    sys.exit()
+
+file_json = {}
+file_json['name'] = sys.argv[1]
+
+f = open(sys.argv[1], 'rb')
+#l = f.read(1024)
+file_json['content'] = base64.b64encode(f.read())
+
+#while (l):
+#    s.send(l)
+#    l = f.read(1024)
+s.send(json.dumps(file_json), False)
+
 s.close()
 f.close()
