@@ -1,31 +1,11 @@
 # Diggo Bone
+##### por [Josivan Medeiros](https://github.com/JoMedeiros) e [Natália Brito](https://github.com/bnatalha)
 
-## @TODOs
+Este projeto tem como objetivo transformar a BeagleBoneBlack em uma nuvem pessoal,
+servindo de interface entre um computador e a beagle.
 
-- [ ] Implementar o programa principal. Ele será responsável por criar as threads das tarefas
-
-## Tarefas/Funcionalidades
-
-### Create
-
-- [ ] updload (faltando permitir escolher o nome, etc)
-
-### Read
-
-- [ ] download
-
-### Update
-
-- [ ] renomear
-- [ ] escrever em arquivos (de texto)
-
-### Delete
-
-- [ ] apagar arquivos
-
-### Opcionais
-
-- [ ] criar thumbnail para visualizar arquivos de imagem
-- [ ] permitir conversão de arquivos de imagem
-- [ ] permitir redimensionar imagens
-
+### Features:
+- protocolo de transporte de arquivos implementados pelo software (sockets)
+  - ~~sistema CRUD~~
+- ~~interface gráfica gtk~~
+- ~~multiusuario~~
