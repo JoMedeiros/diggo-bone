@@ -31,7 +31,7 @@ def save_file(myconn):
 	f.close()
 	
 	# send()
-	myconn.sendall(b"[SERVER] saved \"mytest.txt\" file")
+	myconn.sendall(b'[SERVER] all good.')
 
 def conn_server(host, port, max_user):
 	# socket()
