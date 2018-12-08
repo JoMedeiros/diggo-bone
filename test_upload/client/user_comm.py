@@ -54,13 +54,20 @@ def user_loop(sckt):
 	while USERCOMM != 'EXIT':
 		USERCOMM = input(user_intro)
 
-		if USERCOMM == 'GET_FILELIST':
-			print('Not implemented yet')
-		elif USERCOMM == 'SEND_FILE':
-			filename = input('enter valid filename. \n>')
-			print("sending file selected....")
-			response =  send_file(sckt, filename)
-			print("good" if response else "bad")
+		# ----------- FOR TESTING -----------------
+		if False:
+			if USERCOMM == 'GET_FILELIST':
+				print('Not implemented yet')
+			elif USERCOMM == 'SEND_FILE':
+				filename = input('enter valid filename. \n>')
+				print("trying to send file selected....")
+				response =  send_file(sckt, filename)
+				print("good" if response else "bad")
+
+		if USERCOMM == 't': # test send_file
+			response =  send_file(sckt, 'test.txt')
+			print("good" if response else "bad")			
+
 		elif USERCOMM != 'EXIT':
 			print('comando invalido')
 		print("")

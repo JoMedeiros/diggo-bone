@@ -49,18 +49,19 @@ def conn_server(host, port, max_user):
 					# recv()
 					data = b''
 					while True:
-						parcial_data = conn.recv(512)
-						print("[RECV]: " + str(data)[:20])
+						parcial_data = conn.recv(8)
+						print("[RECV]: " + parcial_data.decode())
 						if not parcial_data: 
 							break
 						data += parcial_data
 						#DEBUG
-						print('data: ' + parcial_data.decode())
-						time.sleep(.5)
+						print('data: ' + data.decode())
+						#time.sleep(.5)
 
 					#DEBUG
 					print('Treating recv.')
 					# treat byte data as json
+					print ("data type: " + str(type(data)))
 					json_response = json.loads(data.decode())
 
 					# get operation
@@ -74,11 +75,6 @@ def conn_server(host, port, max_user):
 			#print("I/O error({0}): {1}".format(errno, strerror))
 			tb = sys.exc_info()
 			print(str(tb))
-		except ValueError:
-			print("Could not convert data to an integer.")
-		except:
-			print("Unexpected error:", sys.exc_info()[0])
-			raise
 		finally:
 			s.close()
 
