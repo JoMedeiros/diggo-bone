@@ -2,30 +2,19 @@
 
 ## @TODOs
 
-- [ ] Implementar o programa principal. Ele será responsável por criar as threads das tarefas
+- [ ] Implementar o programa princial. Ele será responsável por criar as threads das tarefas
+### GUI @TODOS
+- [ ] Criar duas tabs: uma com os arquivos locais, outra com os da BBB
+- [ ] Fazer uma função recursiva para ler todos os arquivos e subpastas e converter para json
+- [ ] Fazer uma função para ler esse json e Transformar em uma TreeView
 
 ## Tarefas/Funcionalidades
 
-### Create
-
-- [ ] updload (faltando permitir escolher o nome, etc)
-
-### Read
-
+- [x] updload
 - [ ] download
-
-### Update
-
 - [ ] renomear
-- [ ] escrever em arquivos (de texto)
 
-### Delete
+## Opcionais
 
-- [ ] apagar arquivos
-
-### Opcionais
-
-- [ ] criar thumbnail para visualizar arquivos de imagem
-- [ ] permitir conversão de arquivos de imagem
-- [ ] permitir redimensionar imagens
+- [ ] 
 

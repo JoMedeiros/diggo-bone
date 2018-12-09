@@ -5,54 +5,65 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 import os
 
-diggo_files = [('Doggo.jpg', 2000),('potato.png',666)]
+list_of_files = [['Doggo.jpg', 2000],['potato.png',666]]
 
 class MainWindow(Gtk.Window):
 
     def __init__(self):
+        # Window Initialization
         Gtk.Window.__init__(self, title='Diggo Bone')
+        self.set_border_width(10)
+        self.set_default_size(750, 300)
+        # Components 
+        nb = Gtk.Notebook()
+        nb.set_tab_pos(Gtk.PositionType.TOP)
+
         layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
                 spacing=10)
-        self.add(layout)
-        self.set_border_width(10)
-        self.set_default_size(500, 300)
-        # Convert data to ListStore (lists that TreeView can display)
-        self.files_list_store = Gtk.ListStore(str, int)
-        for item in diggo_files:
-            self.files_list_store.append(list(item))
+        ## Buttons
+        loadfolderBtn = Gtk.Button(label='carregar diretorio')
+        loadfileBtn = Gtk.Button(label='carregar arquivo')
+        sincBtn = Gtk.Button(label='sincronizar com a BeagleBone')
+        ## Button Box
+        btnBox = Gtk.HButtonBox()
+        btnBox.set_border_width(10)
 
-        # TreeView is the item that is displayed
-        files_tree_view = Gtk.TreeView(self.files_list_store)
+        loadfolderBtn.connect('clicked', self.on_folder_clicked)
+        loadfileBtn.connect('clicked', self.on_file_load)
+        sincBtn.connect('clicked', self.sincronizar)
         
-        for i, col_title in enumerate(['Nome', 'Tamanho']):
+        self.init_tree_view()
+        # Add TreeView to main layout
+        scrolled_window = Gtk.ScrolledWindow()
+        scrolled_window.set_policy(
+            Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        scrolled_window.add(self.files_tree_view)
+        layout.pack_start(scrolled_window, True, True, 0)
+
+        btnBox.pack_start(loadfolderBtn, True, True, 0)
+        btnBox.pack_start(loadfileBtn, True, True, 0)
+        btnBox.pack_start(sincBtn, True, True, 0)
+        
+        layout.pack_end(btnBox, True, True, 0)
+        nb.append_page(layout)
+        self.add(nb)
+
+    def init_tree_view(self):
+        ## Convert data to ListStore (lists that TreeView can display)
+        self.files_list_store = Gtk.TreeStore(str, int)
+        for item in list_of_files:
+            self.files_list_store.append(None, list(item))
+        ## TreeView is the item that is displayed
+        self.files_tree_view = Gtk.TreeView(self.files_list_store)
+        
+        for i, col_title in enumerate(['Nome', 'Tamanho (em bytes)']):
             # Render means how to draw the data
             renderer = Gtk.CellRendererText()
             # Create columns (title is column number)
             column = Gtk.TreeViewColumn(col_title, renderer, text=i)
             column.set_sort_column_id(i)
             # Add column to TreeView
-            files_tree_view.append_column(column)
-        # Add TreeView to main layout
-        layout.pack_start(files_tree_view, True, True, 0)
-
-        # Grid
-        grid = Gtk.Grid()
-        #self.add(grid)
-        # Box
-        self.box = Gtk.Box(spacing=10) 
-        # Buttons
-        self.loadfolderBtn = Gtk.Button(label='carregar diretório')
-        self.loadfileBtn = Gtk.Button(label='carregar arquivo')
-        self.sincBtn = Gtk.Button(label='sincronizar com a BeagleBone')
-        
-        self.loadfolderBtn.connect('clicked', self.on_folder_clicked)
-        self.loadfileBtn.connect('clicked', self.on_file_load)
-        self.sincBtn.connect('clicked', self.sincronizar)
-
-        #self.add(self.box)
-        layout.pack_start(self.loadfolderBtn, True, True, 0)
-        layout.pack_start(self.loadfileBtn, True, True, 0)
-        layout.pack_start(self.sincBtn, True, True, 0)
+            self.files_tree_view.append_column(column)
     
     def sincronizar(self, widget):
         print('Fazendo upload...')
@@ -66,7 +77,8 @@ class MainWindow(Gtk.Window):
 
         if response == Gtk.ResponseType.OK:
             path = dialog.get_filename()
-            self.files_list_store.append((path.split(sep='/')[-1], 1234))
+            size = os.path.getsize(path)
+            self.files_list_store.append('./',(path.split('/')[-1], size))
         elif response == Gtk. ResponseType.CANCEL:
             dialog.destroy()
         dialog.destroy()
@@ -88,8 +100,8 @@ class MainWindow(Gtk.Window):
         dialog.add_filter(filter_any)
 
     def on_folder_clicked(self, widget):
-        dialog = Gtk.FileChooserDialog("Escolha uma pasta para carregar os arquivos", self,
-            Gtk.FileChooserAction.SELECT_FOLDER,
+        dialog = Gtk.FileChooserDialog("Escolha uma pasta para carregar os arquivos", 
+                self, Gtk.FileChooserAction.SELECT_FOLDER,
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
              "Selecionar", Gtk.ResponseType.OK))
         dialog.set_default_size(800, 400)
@@ -97,9 +109,13 @@ class MainWindow(Gtk.Window):
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             path = dialog.get_filename()
-            files = os.listdir()
+            name = path.split('/')[-1]
+            size = sum([os.path.getsize(f) for f in os.listdir(path) if os.path.isfile(f)])
+            files = os.listdir(path)
+            folder = self.files_list_store.append(None,[name,size])
             for f in files:
-                self.files_list_store.append((f, 1234))
+                size = os.path.getsize(path+'/'+f)
+                self.files_list_store.append(folder, (f, size))
         elif response == Gtk.ResponseType.CANCEL:
             dialog.destroy()
 
