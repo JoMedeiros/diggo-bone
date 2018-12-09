@@ -19,21 +19,34 @@ def ready_payload(json_dict):
 	return payload, payload_size
 
 
-# TODO : implementar e testar 'SYNC'.
+# TODO : implementar e testar 'SYNC' [PRIORIDADE].
 def user_operations(comm):
 	"""
 	gera payload dado uma operação
 	"""
 
 	if comm == 'SYNC':
-		# gera dicionario de diferença
-		# retorna payload e payload_size
-		# envia payload
-		# espera payload de resposta com a tree sincronizada
-		# atualiza a tree atual e a ulta tree sincronizada
+		# sincroniza server com client
+		# 	gera dicionario de diferença
+		# 	retorna payload e payload_size
+		# 	envia payload
+		# 	espera payload de resposta com a tree sincronizada
+		# 	atualiza a tree atual e a ulta tree sincronizada
 		pass
-	#if comm == "RESET_SERVER":
-		# deleta tudo do servidor
+
+	if comm == "RESET_SERVER":
+		# resetar servidor
+		# 	deleta tudo do servidor
+		#	last_sync_tree do servidor passa passa as ser uma tree vazia
+		pass
+
+	if comm == "GET_SERVER_FILELIST":
+		# requisita a lista de arquivos atualmente no server. pode ser diferente da
+		# last_synced_tree caso exitam mais de um usuário utilizando o programa.
+		# 	envia payload com "OP": "GET_SERVER_FILELIST"
+		# 	espera resposta com lista de arquivos
+		# 	retorna resposta
+		pass
 	pass
 
 
@@ -82,6 +95,8 @@ def socket_conn_client():
 
 	while True:
 
+		# TODO : modificar para receber estímulo da interface.
+
 		# get user operation
 		comm = input("> comm: ")
 		
@@ -90,15 +105,14 @@ def socket_conn_client():
 			sock.send(comm.encode())
 			break
 
-		# decide user operation
-		payload, payload_size = user_operations(comm)
-		# speak to server
-		socket_talk(sock, payload, payload_size)
+		# treat server response.
+		server_response = user_operation(comm)
+		# treat_server_response(server_response)
 
 	sock.close()
 
 
-# para tests
+# TEST
 if __name__ == "__main__":
 	
 	# global LAST_SYNC_TREE = json.loads(open("sync_tree.json", 'r').read())
