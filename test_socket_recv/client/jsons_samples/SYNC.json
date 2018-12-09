@@ -1,0 +1,25 @@
+{
+	"OP": "SYNC",
+	"BODY":{
+
+		"test":
+		{
+			"type": "dir",
+			"test1.txt": 
+			{	
+				"type": "file",
+				"status": "deleted",
+				"last_modified": "2018/12/7"
+			},
+
+			"test2.txt":
+			{
+				"type": "file",
+				"status": "altered",
+				"last_modified": "2018/12/8"
+				"content": "this is content"
+			}
+		}
+
+	}
+}

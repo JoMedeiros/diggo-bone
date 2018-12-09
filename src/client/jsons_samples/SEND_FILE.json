@@ -1,0 +1,9 @@
+{
+	"OP":"SEND_FILE",
+	"BODY":
+	{
+		"filepath": "/test/test.txt",
+		"last_modified": "2018/12/7",
+		"content": "this is file contents"
+	}
+}
