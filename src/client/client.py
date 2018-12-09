@@ -11,7 +11,7 @@ def ready_payload(json_dict):
 	"""
 	dado dicionário, o transforma em numa string formatada
 	para .json e retorna tanto o tamanho essa string ("payload")
-	e o seu tamaho em uma string de bytes.
+	e o seu tamanho ("payload_size") em uma string de bytes.
 	"""
 	payload = json.dumps(payload).encode()
 	payload_size = str(len(payload)).encode()
@@ -19,11 +19,12 @@ def ready_payload(json_dict):
 	return payload, payload_size
 
 
-# TODO : testar.
+# TODO : implementar e testar 'SYNC'.
 def user_operations(comm):
 	"""
 	gera payload dado uma operação
 	"""
+
 	if comm == 'SYNC':
 		# gera dicionario de diferença
 		# retorna payload e payload_size
@@ -36,6 +37,7 @@ def user_operations(comm):
 	pass
 
 
+# TODO : testar
 def socket_talk(sock, payload, payload_size):
 	"""
 	realiza a comunicação cliente/servidor,
@@ -66,9 +68,10 @@ def socket_talk(sock, payload, payload_size):
 	return True
 
 
+# TODO : modularizar para se comunicar com a interface
 def socket_conn_client():
 	"""
-	cria e admnistar socket que se conectará ao servidor.
+	cria e admnistra socket que se conectará ao servidor.
 	"""
 	
 	global SERVER_IP
@@ -95,7 +98,7 @@ def socket_conn_client():
 	sock.close()
 
 
-
+# para tests
 if __name__ == "__main__":
 	
 	# global LAST_SYNC_TREE = json.loads(open("sync_tree.json", 'r').read())
