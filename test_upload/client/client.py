@@ -16,20 +16,25 @@ LOOPIP = '127.0.0.1'
 
 # test
 def send_message(mysocket, message):
-	s.sendall(message)
-
+	mysocket.sendall(message)
 
 def conn_user(server, port, message, filename):
 
-	# socket()
-	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-		
-		# connect()
-		s.connect((server, port))
-		print("socket connected to. " + str((server, port)))
+	try:
+		# socket()
+		with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as clientsocket:
+			
+			# connect()
+			clientsocket.connect((server, port))
+			print("socket connected to. " + str((server, port)))
 
-		# send()
-		user_comm.user_loop(s)
+			# send()
+			user_comm.user_loop(clientsocket)
+	except Exception:
+		tb = sys.exc_info()
+		print(str(tb))
+	finally:
+		clientsocket.close()
 
 	print("connection closed.")
 

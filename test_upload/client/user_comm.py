@@ -34,10 +34,6 @@ def send_file(sckt, filename):
 	
 
 def get_response(sckt):
-	#if skct == None:
-	#print("[get_response]: no socket.")
-	#pass
-
 	data = sckt.recv(1024)
 	return data.decode() == '[SERVER] all good.'
 	

@@ -1,1 +1,1 @@
-this is content.
+You pass select three lists: the first contains all sockets that you might want to try reading; the second all the sockets you might want to try 

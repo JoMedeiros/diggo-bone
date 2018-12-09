@@ -2,8 +2,12 @@
 
 import socket
 import json
+import time
 
 def create_server_socket():
+	
+	MAXBUFF = 1024
+
 	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	sock.bind(('',9999))
 	sock.listen(1)
@@ -23,15 +27,20 @@ def create_server_socket():
 			buffsize = int(data.decode()[:4])
 			print("next buff: " + str(buffsize))
 
-			# send()
+			# send() got buffsize
 			conn.send(b'[SERVER]: got buffsize of ' + str(buffsize).encode())
 
-			# recv()
-			data = conn.recv(buffsize)
-			print('message: ' + data.decode())
+			# recv() message loop
+			data = ''
+			chunks = -(-buffsize//MAXBUFF)
+			for i in range(chunks):
+				p_data = conn.recv(MAXBUFF)
+				print('p_data: ' + p_data.decode())
+				data += p_data.decode()
+				time.sleep(.5)
 
 			# send()
-			conn.send(b'[SERVER ]: ' + data)
+			conn.send(b'[SERVER ]: ' + data.encode())
 
 		print("")
 
