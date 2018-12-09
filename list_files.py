@@ -8,25 +8,41 @@ parser.add_argument('path', metavar='P', type=str, nargs='+',
                     help='a path to search for files')
 
 args = parser.parse_args()
-#tree = {}
 
-def json_tree(path,tabs):
-    tree = '[\n'
+def rec_json_tree(path,tabs=1,sep='\t'):
+    #tree = '{\n'
+    tree =''
     children = os.listdir(path)
     for c in children:
-        for i in range(tabs):
-            tree=tree+' '
+        tree += (tabs*sep)+'"'+c+'":\n' # The name
         if (os.path.isfile(path+'/'+c)):
             size = os.path.getsize(path+'/'+c)
-            tree=tree+('{"name": "'+c+ '" , "size": "'+str(size)+' KB"}' )
+            timestamp = str(os.stat(path+'/'+c).st_mtime)
+            tree+=tabs*sep+('{\n'
+                +(tabs+1)*sep+'"type": "file",\n'
+                +(tabs+1)*sep+'"status": "idle",\n'
+                +(tabs+1)*sep+'"size": "'+str(size)+' KB"\n'
+                +tabs*sep+'}')
+        elif not os.listdir(path+'/'+c):
+            tree+=tabs*sep+('{\n'+
+                    (tabs+1)*sep+'"type": "empty_dir"\n'+
+                    tabs*sep+'}')
         else:
-            tree=tree+('{"name": "'+c+'" ,"children": '+json_tree(path+'/'+c,tabs+1)
-                    +'}')
+            tree+=tabs*sep+('{\n'
+                +(tabs+1)*sep+'"type": "dir",\n'
+                +(tabs+1)*sep+'"status": "idle",\n'
+                +rec_json_tree(path+'/'+c,tabs+1) # Files and subdirs
+                +tabs*sep+'}')
         if c is not children[-1]:
-            tree=tree+',\n'
-    return tree + ']'
+            tree+=','
+        tree+='\n'
+    return tree
+    #+(tabs-1)*sep+'close}'
+
+def json_tree(p):
+    return '{\n'+rec_json_tree(p)+'}'
 
 for p in args.path:
-    print(json_tree(p, 0))
+    print(json_tree(p))
 
 
