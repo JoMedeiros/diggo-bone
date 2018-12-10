@@ -6,17 +6,21 @@ import time
 
 # user defined modules
 #import calc_diff
-import diggo_socket
+import diggo_socket as ds
 
 MAXBUFF = 1024
 SERVER_IP = "127.0.0.1"
 PORT = 9999
 
+SKCT_MAN = ''
+
 # TODO : implementar e testar 'SYNC' [PRIORIDADE].
-def user_operations(comm):
+def treat_user_comm(comm):
 	"""
 	realiza comunicações via socket com o servidor dado um commando
 	"""
+
+	global SKCT_MAN
 
 	if comm == 'SYNC':
 		# sincroniza server com client
@@ -40,8 +44,29 @@ def user_operations(comm):
 		# 	espera resposta com lista de arquivos
 		# 	retorna resposta
 		pass
-	pass
 
+	if comm == "TEST":
+		# testar modulos
+		# simple json
+		p , p_size = SKCT_MAN.ready_payload({ "OP": "TEST", "BODY": "I am client testing."})
+		SKCT_MAN.send_payload(p, p_size)
+		return 'TEST'
+
+	if comm == 'QUIT':
+		# encerrar programa no servidor e no client
+		# TODO: fechar apaneas no client. timeout no servidor
+		print("\t reading payload...")
+		p , p_size = SKCT_MAN.ready_payload({ "OP": "QUIT", "BODY": "I am client testing."})
+		print("\t sending payload...")
+		SKCT_MAN.send_payload(p, p_size)
+		print("\t reciving payload...")
+		data = json.loads(SKCT_MAN.recv_payload())
+		print("\t print what i got as \'data\'...")
+		print(data)
+		print("\t return data...")
+		return data['OP']
+
+	pass
 
 # TODO : modularizar para se comunicar com a interface
 def socket_conn_client():
@@ -51,26 +76,26 @@ def socket_conn_client():
 	
 	global SERVER_IP
 	global PORT
+	global SKCT_MAN
 
 	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	sock.connect((SERVER_IP, PORT))
+
+	SKCT_MAN = ds.Diggo_socket_manager(sock, 'CLIENT')
 
 	while True:
 
 		# TODO : modificar para receber estímulo da interface.
 
-		# get user operation
-		comm = input("> comm: ")
-		
-		# quit both on server and client
-		if comm == 'quit':
-			sock.send(comm.encode())
-			break
-
 		# treat server response.
-		server_response = user_operation(comm)
+		server_response = treat_user_comm(input("> comm: "))
+		# TEST : 
+		print(str(server_response))
+		if server_response == 'QUIT':
+			break
 		# treat_server_response(server_response)
 
+	print('colsing socket...')
 	sock.close()
 
 
