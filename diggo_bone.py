@@ -8,14 +8,13 @@ from io import StringIO
 import json
 import shutil
 import time
+import datetime
 import list_files as lf
 
 diggo_dir = '../Diggo-files'
-def sinc_dir():
-    while (True):
-        self.json_string = lf.json_tree(diggo_dir)
-        self.objs = json.loads(self.json_string)
-    
+def send_json(objs):
+    print('in progress...')
+
 class MainWindow(Gtk.Window):
 
     def __init__(self):
@@ -46,7 +45,6 @@ class MainWindow(Gtk.Window):
         # Components 
         nb = Gtk.Notebook()
         nb.set_tab_pos(Gtk.PositionType.TOP)
-
         layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
                 spacing=10)
         
@@ -59,11 +57,12 @@ class MainWindow(Gtk.Window):
 
         loadfolderBtn.connect('clicked', self.on_folder_clicked)
         loadfileBtn.connect('clicked', self.on_file_load)
-        sincBtn.connect('clicked', self.sincronizar)
+        sincBtn.connect('clicked', self.synchronize)
         localreloadBtn.connect('clicked', self.local_reload)
         deleteBtn.connect('clicked', self.delete)        
-        self.init_tree_view()
+        
         # Add TreeView to main layout
+        self.init_tree_view()
         self.scrolled_window = Gtk.ScrolledWindow()
         self.scrolled_window.set_policy(
             Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
@@ -98,9 +97,11 @@ class MainWindow(Gtk.Window):
             self.files_tree_view.append_column(column)
         print('tree view loaded') 
 
-    def sincronizar(self, widget):
+    def synchronize(self, widget):
         # This function must send JSON object to server
-        print('Fazendo upload...')
+        self.local_reload(widget)
+        # @TODO fazer a funcao que transforma o objeto em JSON string e manda pro server
+        send_json(self.objs)
 
     def on_file_load(self, widget):
         dialog = Gtk.FileChooserDialog('Selecione um arquivo', None, 
@@ -111,12 +112,16 @@ class MainWindow(Gtk.Window):
 
         if response == Gtk.ResponseType.OK:
             # @TODO : Add file in the JSON object
+            dic = {}
             path = dialog.get_filename()
-            size = os.path.getsize(path)
             name = path.split('/')[-1]
+            dic['size'] = os.path.getsize(path)
             shutil.copy(path,diggo_dir)
-            timestamp = time.time()
-            self.files_list_store.append(None,[name, str(size)+' bytes', str(timestamp)])
+            dic['timestamp'] = str(time.time())
+            dic['date'] = str(datetime.datetime.fromtimestamp(float(dic['timestamp'])))
+            self.objs[name] = dic
+            self.files_list_store.append(
+                    None,[name, str(dic['size'])+' bytes', str(dic['date'])])
         elif response == Gtk. ResponseType.CANCEL:
             dialog.destroy()
         dialog.destroy()
@@ -160,14 +165,16 @@ class MainWindow(Gtk.Window):
 
         dialog.destroy()
     
-    def rec_add_node(self, root, jsobj):
+    def rec_add_node(self, root, jsobj, comp_json=None):
         for key, value in jsobj.iteritems():
             if type(value) in [str,int,float]:
                 return
             pair = [str(key), '', value['date']]
 
+            #if comp_json and comp_json[str(key)]['timestamp'] > value['timestamp']:
+                #value = comp_json[key]
             if 'size' in value: # It's a file
-               pair[1] = value['size']
+               pair[1] = str(value['size'])
                self.files_list_store.append(root,pair)
             elif 'children' in value: # It's a dir
                 nr = self.files_list_store.append(root,pair)
@@ -175,9 +182,10 @@ class MainWindow(Gtk.Window):
         
     def local_reload(self, widget):
         self.json_string = lf.json_tree(diggo_dir)
-        self.objs = json.loads(self.json_string)
+        temp = json.loads(self.json_string)
         self.files_list_store.clear()
-        self.rec_add_node(None, self.objs)
+        self.rec_add_node(None, temp)
+        self.objs = temp
         self.files_tree_view = Gtk.TreeView(self.files_list_store)
         for i, col_title in enumerate(['Nome', 'Tamanho (em bytes)', 'Alterado em']):
             # Render means how to draw the data
@@ -190,7 +198,7 @@ class MainWindow(Gtk.Window):
         print('reload')
 
     def delete(self, widget):
-        print('@TODO deletando arquivo')
+        print('deletando arquivo')
         dialog = Gtk.MessageDialog(self, 0, Gtk.MessageType.WARNING,
             Gtk.ButtonsType.OK_CANCEL, "Tem certeza que deseja deletar?")
         dialog.format_secondary_text(
