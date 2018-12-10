@@ -33,20 +33,19 @@ class MainWindow(Gtk.Window):
 
         layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
                 spacing=10)
+        
         ## Buttons
         loadfolderBtn = Gtk.Button(label='carregar diretorio')
         loadfileBtn = Gtk.Button(label='carregar arquivo')
         sincBtn = Gtk.Button(label='sincronizar com a BeagleBone')
         localreloadBtn = Gtk.Button(label='atualizar alteracoes')
-        ## Button Box
-        btnBox = Gtk.HButtonBox()
-        btnBox.set_border_width(10)
+        deleteBtn = Gtk.Button(label='deletar')
 
         loadfolderBtn.connect('clicked', self.on_folder_clicked)
         loadfileBtn.connect('clicked', self.on_file_load)
         sincBtn.connect('clicked', self.sincronizar)
         localreloadBtn.connect('clicked', self.local_reload)
-        
+        deleteBtn.connect('clicked', self.delete)        
         self.init_tree_view()
         # Add TreeView to main layout
         self.scrolled_window = Gtk.ScrolledWindow()
@@ -55,16 +54,13 @@ class MainWindow(Gtk.Window):
         self.scrolled_window.add(self.files_tree_view)
         layout.pack_start(self.scrolled_window, True, True, 0)
 
-        #btnBox.pack_start(loadfolderBtn, True, True, 0)
-        #btnBox.pack_start(loadfileBtn, True, True, 0)
-        #btnBox.pack_start(sincBtn, True, True, 0)
-        
         grid = Gtk.Grid()
         grid.attach(loadfolderBtn,0,0,1,1)
         grid.attach(loadfileBtn,1,0,1,1)
         grid.attach(sincBtn, 0,1,1,1)
         grid.attach(localreloadBtn, 1,1,1,1)
-        layout.pack_end(grid, True, True, 0)
+        grid.attach(deleteBtn,0,2,1,1)
+        layout.pack_end(grid, False, False, 0)
         nb.append_page(layout)
         self.add(nb)
 
@@ -74,7 +70,8 @@ class MainWindow(Gtk.Window):
         
         self.rec_add_node(None, self.objs)
         self.files_tree_view = Gtk.TreeView(self.files_list_store)
-        
+        self.files_tree_view.get_selection().connect(
+                'changed', self.on_changed)
         for i, col_title in enumerate(['Nome', 'Tamanho (em bytes)', 'Alterado em']):
             # Render means how to draw the data
             renderer = Gtk.CellRendererText()
@@ -175,6 +172,28 @@ class MainWindow(Gtk.Window):
             # Add column to TreeView
             self.files_tree_view.append_column(column)
         print('reload')
+
+    def delete(self, widget):
+        print('@TODO deletando arquivo')
+        dialog = Gtk.MessageDialog(self, 0, Gtk.MessageType.WARNING,
+            Gtk.ButtonsType.OK_CANCEL, "Tem certeza que deseja deletar?")
+        dialog.format_secondary_text(
+            "O arquivo sera deletado do diretorio local, mas so sera deletado da BBB quando clicar em sincronizar.")
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            print("Delentando arquivo")
+            if self.sel and os.path.exists(diggo_dir+'/'+self.sel):
+                os.remove(diggo_dir+'/'+self.sel)
+            self.local_reload(widget)
+            dialog.destroy()
+        elif response == Gtk.ResponseType.CANCEL:
+            print("Cancelando...")
+            dialog.destroy()
+
+    def on_changed(self, selection):
+        (model, iter) = selection.get_selected()
+        if iter is not None:
+            self.sel = (str(model[iter][0]))
 
 window = MainWindow()
 window.connect('delete-event', Gtk.main_quit)
