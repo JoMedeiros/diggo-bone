@@ -19,6 +19,21 @@ def sinc_dir():
 class MainWindow(Gtk.Window):
 
     def __init__(self):
+        login = Gtk.Window(title="Login")
+        login.set_default_size(200,200)
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        vbox.add(Gtk.Label('Nome: '))
+        vbox.add(Gtk.Entry())
+        vbox.add(Gtk.Label('Senha: '))
+        vbox.add(Gtk.Entry(visibility=False))
+        loginBtn = Gtk.Button('Entrar')
+        loginBtn.connect('clicked', lambda widget: login.close())
+        vbox.add(loginBtn)
+        login.add(vbox)
+        login.show_all()
+        login.connect("destroy", Gtk.main_quit)
+        Gtk.main()
+
         self.json_string = lf.json_tree(diggo_dir)
         self.objs = json.loads(self.json_string)
 
