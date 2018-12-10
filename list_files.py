@@ -3,7 +3,7 @@
 import os
 import argparse
 
-def rec_json_tree(path,tabs=1,sep='\t'):
+def rec_json_tree(path,tabs=1,sep=' '):
     #tree = '{\n'
     tree =''
     children = os.listdir(path)
@@ -28,8 +28,10 @@ def rec_json_tree(path,tabs=1,sep='\t'):
                 +(tabs+1)*sep+'"type": "dir",\n'
                 +(tabs+1)*sep+'"status": "idle",\n'
                 +(tabs+1)*sep+'"timestamp": '+timestamp+',\n'
-                +rec_json_tree(path+'/'+c,tabs+1) # Files and subdirs
-                +tabs*sep+'}')
+                +(tabs+1)*sep+('"children":\n'
+                +(tabs+1)*sep+'{\n'
+                +rec_json_tree(path+'/'+c,tabs+2)) # Files and subdirs
+                +(tabs+1)*sep+'}\n'+(tabs*sep)+'}')
         if c is not children[-1]:
             tree+=','
         tree+='\n'
