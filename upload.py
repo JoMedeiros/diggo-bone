@@ -5,8 +5,8 @@ import sys
 import base64
 import json
 
-SERVER = '192.168.6.2'
-PORT = 1234
+SERVER = '192.168.6.2' # endereço da beagl bone
+PORT = 1234 
 
 s = socket.socket()
 s.connect((SERVER, PORT))
@@ -25,7 +25,7 @@ file_json['content'] = base64.b64encode(f.read())
 #while (l):
 #    s.send(l)
 #    l = f.read(1024)
-s.send(json.dumps(file_json), False)
+s.send(json.dumps(file_json))
 
 s.close()
 f.close()

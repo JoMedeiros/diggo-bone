@@ -5,7 +5,6 @@ import argparse
 import datetime
 
 def rec_json_tree(path,tabs=1,sep=' '):
-    #tree = '{\n'
     tree =''
     children = os.listdir(path)
     for c in children:
@@ -23,9 +22,10 @@ def rec_json_tree(path,tabs=1,sep=' '):
                 +(tabs+1)*sep+'"date": "'+date+'"\n'
                 +tabs*sep+'}')
         elif not os.listdir(path+'/'+c):
-            tree+=tabs*sep+('{\n'+
+            pass
+            '''tree+=tabs*sep+('{\n'+
                     (tabs+1)*sep+'"type": "empty_dir"\n'+
-                    tabs*sep+'}')
+                    tabs*sep+'}')'''
         else:
             tree+=tabs*sep+('{\n'
                 +(tabs+1)*sep+'"type": "dir",\n'

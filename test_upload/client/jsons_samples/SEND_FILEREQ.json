@@ -1,0 +1,8 @@
+{
+	"OP": "SEND_FILE", 
+	"BODY":
+	{
+		"filename": "test.txt",
+		"content": "this is the file's content."
+	}
+}
