@@ -2,7 +2,6 @@
 
 import socket
 import json
-import diggo_socket
 
 class Diggo_socket_manager:
 

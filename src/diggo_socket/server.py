@@ -34,10 +34,11 @@ def treat_client_request(request):
 		#	envia a sync_tree para o client
 		pass
 
-	if request['OP'] == 'RESET_SERVER':
-		# resetar servidor
+
+	if request['OP'] == 'WIPEOUT_SERVER':
+		# Esvazia o servidor para seu estado inicial
 		# 	deleta tudo do servidor
-		#	last_sync_tree do servidor passa passa as ser uma tree vazia
+		#	last_sync_tree do servidor passa as ser uma tree vazia
 		#   REVIEW : envia resposta para o cliente
 		pass
 

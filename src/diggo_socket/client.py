@@ -69,7 +69,7 @@ def treat_user_comm(comm):
 	pass
 
 # TODO : modularizar para se comunicar com a interface
-def socket_conn_client():
+def create_client_socket():
 	"""
 	cria e admnistra socket que se conectará ao servidor.
 	"""
@@ -95,7 +95,7 @@ def socket_conn_client():
 			break
 		# treat_server_response(server_response)
 
-	print('colsing socket...')
+	print('closing socket...')
 	sock.close()
 
 
@@ -105,5 +105,5 @@ if __name__ == "__main__":
 	# global LAST_SYNC_TREE = json.loads(open("sync_tree.json", 'r').read())
 	# global CURENT_TREE = LAST_SYNC_TREE
 
-	socket_conn_client()
+	create_client_socket()
 	print('Exiting...')
