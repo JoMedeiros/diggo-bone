@@ -128,9 +128,84 @@ class Diggo_directory_manager:
 
 		pass
 
+	def update_current(self, path, type, newstatus):
+		"""
+		update one of the tree's leaf nodes (a node can be a directory,
+		and leaf node can only be a file)
+		"""
+
+		# search for node in CURRENT_TREE
+		# modify it
+
+		split_path = path.split('/')
+		path_len = len(split_path)
+		d = self.CURRENT_TREE
+
+		if newstatus == "new":
+			for i in range(path_len):
+
+				# se chegou na folha a ser adicionada
+				if i == path_len-1:
+					# alterar campos
+					d[split_path[i]]["status"] = "new"
+					d[split_path[i]]["type"] = "file"
+					d[split_path[i]]["timestamp"] = "" #update
+					d[split_path[i]]["datetime"] = "" #update
+
+				# senão (está no meio do caminho)
+				# 	se diretório já está na árvore
+				elif split_path[i] in d:
+					# diretorio "alterado"
+					d[split_path[i]]['status'] = 'altered'
+					d[split_path[i]]["timestamp"] = "" #update
+					d[split_path[i]]["datetime"] = "" #update
+				# 	se diretório não estiver na árvore
+				elif:
+					# diretorio adicionado
+					d[split_path[i]]['status'] = 'new'
+					d[split_path[i]]["type"] = "dir"
+					d[split_path[i]]["timestamp"] = "" #update
+					d[split_path[i]]["datetime"] = "" #update
+					d[split_path[i]]["children"] = "" #update
+
+				# próxima iteração: ir um diretório abaixo
+				d = d[split_path[i]]['children']
+
+		if newstatus == "delete":
+			# primeiro round
+			# CASO : remover diretorios um nivel abaixo (descendo)
+			for i in range(path_len):
+
+				# se chegou no item a ser removido OU passou dele 
+				# 	item['status'] = 'deleted'
+
+				continue
+
+			# segundo round
+			# CASO : remover diretorios acima (subindo)
+			for i+path_len in range(path_len):
+				
+				# OBS: pra pular o ultimo é só fzr split_path[-1]
+
+				# se o diretorio/item/dicionario atual NÃO é vazio, dado
+				#	item['status'] = 'altered'
+
+		if newstatus == "altered":
+			# parecido com  "new"
+			continue
+				
+		
+		print(path_list)
+
+		pass
+
 # TEST
 if __name__ == "__main__":
 	TREE_MAN = Diggo_directory_manager(side='TEST', dirpath='test_directory')
 	print(str(TREE_MAN.CURRENT_TREE))
+	print("\n\n")
+	TREE_MAN.update_current("newdir/newfile.txt")
+	#TREE_MAN.save_tree("CURRENT_TREE")
+	#TREE_MAN.save_tree("SYNC_TREE")
 
 	print('Exiting...')
