@@ -21,7 +21,7 @@ def send_json(objs):
     for f in objs:
         if objs[f]['type'] == 'file':
             print(f)
-            ul.upload(f)
+            ul.upload(diggo_dir+'/'+f)
     print('in progress...')
 
 class MainWindow(Gtk.Window):
@@ -183,7 +183,7 @@ class MainWindow(Gtk.Window):
         dialog.destroy()
     
     def rec_add_node(self, root, jsobj, comp_json=None):
-        for key, value in jsobj.iteritems():
+        for key, value in jsobj.items():
             if type(value) in [str,int,float]:
                 return
             pair = [str(key), '', value['date']]
