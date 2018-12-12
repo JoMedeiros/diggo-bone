@@ -9,10 +9,19 @@ import json
 import shutil
 import time
 import datetime
-import list_files as lf
 
-diggo_dir = '../Diggo-files'
+import list_files as lf
+import upload as ul
+
+if not os.path.exists('./Diggo-files'):
+    os.makedirs('Diggo-files')
+
+diggo_dir = './Diggo-files'
 def send_json(objs):
+    for f in objs:
+        if objs[f]['type'] == 'file':
+            print(f)
+            ul.upload(f)
     print('in progress...')
 
 class MainWindow(Gtk.Window):
@@ -152,14 +161,22 @@ class MainWindow(Gtk.Window):
 
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
-            path = dialog.get_filename()
+            subfolder = dialog.get_filename()
+            name = subfolder.split('/')[-1]
+            sfjson = lf.json_tree(subfolder)
+            sfobj = json.loads(sfjson)
+            self.rec_add_node(None, sfobj)
+            self.objs[name] = sfobj
+            shutil.copytree(subfolder,diggo_dir+'/'+name)
+            '''path = dialog.get_filename()
             name = path.split('/')[-1]
-            size = sum([os.path.getsize(f) for f in os.listdir(path) if os.path.isfile(f)])
+            size = ""
+            #sum([os.path.getsize(f) for f in os.listdir(path) if os.path.isfile(f)])
             files = os.listdir(path)
             folder = self.files_list_store.append(None,[name,size])
             for f in files:
                 size = os.path.getsize(path+'/'+f)
-                self.files_list_store.append(folder, (f, size))
+                self.files_list_store.append(folder, (f, size))'''
         elif response == Gtk.ResponseType.CANCEL:
             dialog.destroy()
 
@@ -207,7 +224,10 @@ class MainWindow(Gtk.Window):
         if response == Gtk.ResponseType.OK:
             print("Delentando arquivo")
             if self.sel and os.path.exists(diggo_dir+'/'+self.sel):
-                os.remove(diggo_dir+'/'+self.sel)
+                if os.path.isfile(diggo_dir+'/'+self.sel):
+                    os.remove(diggo_dir+'/'+self.sel)
+                else:
+                    shutil.rmtree(diggo_dir+'/'+self.sel)
             self.local_reload(widget)
             dialog.destroy()
         elif response == Gtk.ResponseType.CANCEL:
